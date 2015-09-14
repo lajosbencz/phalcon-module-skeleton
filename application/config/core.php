@@ -94,12 +94,8 @@ return array(
             'class' => function ($application) {
                 $router = new Router(false);
 
-                $router->add('/', array(
-                    'module' => 'frontend',
-                    'controller' => 'index',
-                    'action' => 'index'
-                ))->setName('default');
 
+                // This loop generates wildcard routes for every module
                 foreach ($application->getModules() as $key => $module) {
                     $router->add('/'.$key.'/:params', array(
                         'module' => $key,
@@ -123,49 +119,32 @@ return array(
                     ));
                 }
 
-                $router->add('/catalog/category/{id:([0-9]{1,11})}/:params', array(
-                    'module' => 'catalog',
-                    'controller' => 'index',
-                    'action' => 'category',
-                    'id' => 1
-                ))->setName('catalog-category');
+                // Create explicit routes:
+                $router->add('/', array(
+                    'module' => 'home',
+                    'controller' => 'home',
+                    'action' => 'index'
+                ))->setName('default');
+                // ->setName('whatever'); The name can be referenced at URL generation
 
-                $router->add('/catalog/product/{id:([0-9]{1,11})}/:params', array(
-                    'module' => 'catalog',
-                    'controller' => 'product',
+                $router->add('/users/list', array(
+                    'module' => 'users',
+                    'controller' => 'list',
                     'action' => 'index',
-                    'id' => 1
-                ))->setName('catalog-product-view');
-
-
-                $router->add('/oauth/login/{id:([a-z]{1,20})}/:params', array(
-                    'module' => 'oauth',
-                    'controller' => 'index',
-                    'action' => 'index',
-                ))->setName('oauth-index-index');
-
-                $router->add('/api/users/{id:([0-9]{1,32})}/:params', array(
-                    'module' => 'api',
-                    'controller' => 'users',
-                    'action' => 'get',
                 ));
 
-                $router->add('/user/{id:([0-9]{1,32})}/:params', array(
-                    'module' => 'user',
-                    'controller' => 'index',
-                    'action' => 'view',
-                ))->setName('user-index-view');
-
-                $router->add('/frontend/index/getting-started/:params', array(
-                    'module' => 'frontend',
-                    'controller' => 'index',
-                    'action' => 'gettingStarted'
+                $router->add('/users/list/edit', array(
+                    'module' => 'users',
+                    'controller' => 'list',
+                    'action' => 'edit',
                 ));
 
+
+                // If URL is not found, display this page
                 $router->notFound(array(
-                    'module' => 'frontend',
-                    'namespace' => 'Frontend\Controller',
-                    'controller' => 'index',
+                    'module' => 'home',
+                    'namespace' => 'Home\Controller',
+                    'controller' => 'Error',
                     'action' => 'index'
                 ));
 
@@ -185,7 +164,7 @@ return array(
                 return $class;
             },
             'parameters' => array(
-                'layoutsDir' => APPLICATION_PATH . '/layouts/'
+                'layoutsDir' => APPLICATION_PATH . '/layouts/' // No idea what this is for...
             )
         ),
         'auth' => array(
@@ -194,30 +173,18 @@ return array(
     ),
     'application' => array(
         'modules' => array(
-            'frontend' => array(
-                'className' => 'Frontend\Module',
-                'path' => APPLICATION_PATH . '/modules/frontend/Module.php',
-            ),
-            'catalog' => array(
-                'className' => 'Catalog\Module',
-                'path' => APPLICATION_PATH . '/modules/catalog/Module.php',
-            ),
-            'admin' => array(
-                'className' => 'Admin\Module',
-                'path' => APPLICATION_PATH . '/modules/admin/Module.php',
-            ),
-            'api' => array(
-                'className' => 'Api\Module',
-                'path' => APPLICATION_PATH . '/modules/api/Module.php',
-            ),
-            'user' => array(
-                'className' => 'User\Module',
-                'path' => APPLICATION_PATH . '/modules/user/Module.php',
-            ),
             'oauth' => array(
                 'className' => 'OAuth\Module',
                 'path' => APPLICATION_PATH . '/modules/oauth/Module.php',
-            )
+            ),
+            'home' => array(
+                'className' => 'Home\Module',
+                'path' => APPLICATION_PATH . '/modules/home/Module.php',
+            ),
+            'users' => array(
+                'className' => 'Users\Module',
+                'path' => APPLICATION_PATH . '/modules/users/Module.php',
+            ),
         )
     )
 );
